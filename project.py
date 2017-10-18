@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, render_template
+from flask import Flask, request, jsonify, redirect, render_template, flash, url 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Puppy
@@ -66,22 +66,20 @@ def viewItem(category_id, item_id):
     # which will allow them to edit/delete items they've created
 @app.route('/catalog/<int:category_id>/new', methods=['GET', 'POST'])
 def newItem(category_id):
-    if request.method == 'GET':
+    if request.method == 'GET': # Show the add form
         category = session.query(Category).all() #Can change this if you want to
         return render_template('new-item.html', categories=categories)
-    else:
+    else: # Add the Item
         newItem = Item(
             name = request.form['name'],
             description = request.form['description'],
             category = session.query(Category).filter_by(name=request.form['Category']),
-            # TODO: Add user_id --> 
+            # TODO: Add user_id --> user_id = request.form['user']
         )
         session.add(Item)
         session.commit()
-
-
-
-
+        flash('Item has been added successfully')
+        return redirect(url_for('items',category_id=category_id)
 
 
 
