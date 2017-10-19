@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from login_decorator import login_required
 import os
 import random
 import string
@@ -133,7 +134,7 @@ def gconnect():
     print "done!"
     return output
 
-
+# Disconnect from website
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
