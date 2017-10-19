@@ -223,19 +223,57 @@ def newItem(category_id):
 @login_required
 def updateItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
-    item = session.query(Item).filter_by(id=item_id).one()
+    updatedItem = session.query(Item).filter_by(id=item_id).one()
     # check if user is the creator of the item
-    if item.user_id != login_session['user_id']:
-        flash("You must be the creator of an Item to edit it. This item belongs to %s", % item.user_id)
+    if updatedItem.user_id != login_session['user_id']:
+        flash("You must be the creator of an Item to edit it. This item belongs to %s", % updatedItem.name)
         return redirect(url_for('catalog'))
     if request.method == 'GET':
-        return render_template('edit-item.html', category=category, item=item)
+        return render_template('edit-item.html', category=category, updatedItem=updatedItem)
     else:
-        
+        #TODO: Make sure these variables work
+        newName = request.form['name']
+        newDesc = request.form['description']
+        newPic = request.form['picture']
+        newCat = request.form['category']
+        if newName: 
+            updatedItem.name = newName
+        if newDesc:
+            updatedItem.description = newDesc
+        if newPic:
+            updatedItem.picture = newPic
+        if newCat:
+            updatedItem.item_catalog = newCat
+        session.add(updatedItem)
+        session.commit()
+        flash('Item has been updated successfully')
+        return redirect(url_for('viewItem', category_id=category_id, item_id=item_id))
+
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['POST', 'GET'])
+@login_required
+def deleteItem(category_id, item_id):
+    deleteItem = session.query(Item).filter_by(id = item_id).one()
+    category = session.query(Category).filter_by(id = category_id).one()
+    owner = session.query(User).filter_by(id = deleteItem.user_id)
+
+    if login_session['user'] != owner.id:
+        flash('You must be the owner to delete this item. This item belongs to %s.', % owner.name)
+        return redirect(url_for('catalog'))
+    
+    if request.method == 'GET':
+        return render_template('deleteitem.html', item=deleteItem, category=category)
+    else:
+        session.delete(deleteItem)
+        session.commit()
+        flash('Item has been deleted successfully')
+        return redirect(url_for('viewCategory', category_id=category_id))
+
+    
         
 
 
 
 if __name__ == '__main__':
-    app.debug = False
+    app.secret_key = 'mxmkl6-iBsDY8uWl8YwZQJNM'
+    app.debug = True
     app.run(host='0.0.0.0', port=5000)
