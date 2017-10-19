@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, render_template, flash, url 
+from flask import Flask, request, jsonify, redirect, render_template, flash, url_for, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Puppy
@@ -33,10 +33,19 @@ session = DBSession()
 
 
 # ADD LOGIN/AUTHENTICATION/USERS STUFF HERE
-#
-#
-#
-#
+@app.route('/login')
+def veiwLogin():
+    # Create anti-forgery state token
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    login_session['state'] = state
+    
+    return render_template('login.html', STATE=state)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('/'))
+
 
 
 
@@ -59,24 +68,30 @@ def viewCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/<int:item_id>')
 def viewItem(category_id, item_id):
-    category = session.query(Category).filter_by(id = category_id)
-    item = session.query(Item).filter_by(id = item_id)
-    return render_template('detailed-item.html', category=category, item=item)
-    #TODO: Add another html template for when a user is logged into the system 
-    # which will allow them to edit/delete items they've created
+    category = session.query(Category).filter_by(id=category_id)
+    item = session.query(Item).filter_by(id=item_id)
+    creator = session.query(User).filter_by(id=user_id).one()
+    if creator.id != login_session['user_id'] or 'username' not in login_session:    
+        return render_template('detailed-public-item.html', category=category, item=item)
+    else():
+        return render_template('detailed-user-item.html', category=category, item=item)
+
+
+
 @app.route('/catalog/<int:category_id>/new', methods=['GET', 'POST'])
+@login_required
 def newItem(category_id):
     if request.method == 'GET': # Show the add form
-        category = session.query(Category).all() #Can change this if you want to
+        category = session.query(Category).filter_by(id=category_id).one()
         return render_template('new-item.html', categories=categories)
     else: # Add the Item
         newItem = Item(
             name = request.form['name'],
             description = request.form['description'],
-            category = session.query(Category).filter_by(name=request.form['Category']),
+            category = session.query(Category).filter_by(name=request.form['Category'])
             # TODO: Add user_id --> user_id = request.form['user']
         )
-        session.add(Item)
+        session.add(newItem)
         session.commit()
         flash('Item has been added successfully')
         return redirect(url_for('items',category_id=category_id)
