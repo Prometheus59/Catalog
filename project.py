@@ -196,7 +196,7 @@ def viewItem(category_id, item_id):
     creator = session.query(User).filter_by(id=user_id).one()
     if creator.id != login_session['user_id'] or 'username' not in login_session:    
         return render_template('detailed-public-item.html', category=category, item=item)
-    else():
+    else:
         return render_template('detailed-user-item.html', category=category, item=item)
 
 
@@ -211,14 +211,28 @@ def newItem(category_id):
         newItem = Item(
             name = request.form['name'],
             description = request.form['description'],
-            category = session.query(Category).filter_by(name=request.form['Category'])
+            category = session.query(Category).filter_by(id=category_id).one())
             # TODO: Add user_id --> user_id = request.form['user']
-        )
         session.add(newItem)
         session.commit()
         flash('Item has been added successfully')
-        return redirect(url_for('items',category_id=category_id)
+        return redirect(url_for('items',category_id=category_id))
 
+
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
+def updateItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    # check if user is the creator of the item
+    if item.user_id != login_session['user_id']:
+        flash("You must be the creator of an Item to edit it. This item belongs to %s", % item.user_id)
+        return redirect(url_for('catalog'))
+    if request.method == 'GET':
+        return render_template('edit-item.html', category=category, item=item)
+    else:
+        
+        
 
 
 
