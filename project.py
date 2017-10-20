@@ -171,8 +171,6 @@ def gdisconnect():
 
 
 
-
-
 # Flask Routing
 
 @app.route('/')
@@ -211,8 +209,9 @@ def newItem(category_id):
         newItem = Item(
             name = request.form['name'],
             description = request.form['description'],
-            category = session.query(Category).filter_by(id=category_id).one())
-            # TODO: Add user_id --> user_id = request.form['user']
+            category = session.query(Category).filter_by(id=category_id).one(),
+            picture = request.form['picture'],
+            user_id = login_session['user_id'])
         session.add(newItem)
         session.commit()
         flash('Item has been added successfully')
