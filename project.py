@@ -267,8 +267,17 @@ def deleteItem(category_id, item_id):
         flash('Item has been deleted successfully')
         return redirect(url_for('viewCategory', category_id=category_id))
 
-    
-        
+# JSON ENDPOINTs
+
+@app.route('catalog/JSON')
+def catalogJSON():
+    json_catalog = session.query(Category).all()
+    return jsonify(json_catalog = [c.serialize for c in json_catalog])
+
+@app.route('catalog/<int:category_id>/items/JSON')
+def itemsJSON():
+    json_items = session.query(Item).filter_by(category_id = category_id).all()
+    return jsonify(json_items = [i.serialize for i in json_items])
 
 
 

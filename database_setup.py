@@ -12,6 +12,14 @@ class User(Base):
     email = Column(String(50), nullable=false)
     picture = Column(String(50), nullable=false)
     
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'picture': self.picture
+    }
 
 class Category(Base):
     __tablename__: "categories"
