@@ -3,8 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/style/catalog.css') }}">
 </head>
+
 <body>
-    
+    <nav>
+        <ul>
+            <li><a href="/catalog">Catalog App</a></li>
+            <li style="float:right">
+                <a href="/login">Login</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="category_list">
+            <ul>
+            {% for i in categories %}
+            <li><a href="#">{{i.name}}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
+
 </html>
