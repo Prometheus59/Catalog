@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, redirect, render_template, flash, url_for, session as login_session, make_response
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Puppy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
@@ -23,16 +22,8 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog App"
 
-engine = create_engine('sqlite:///puppies.db')
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
-
-
-
 # Connect to database
-engine = create_engine('postgresql://item_catalog.db')
+engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 
 # Creating a session
@@ -176,9 +167,9 @@ def gdisconnect():
 @app.route('/')
 @app.route('/catalog')
 def viewCatalog():
-    categories = session.query(Category)
-    items = session.query(Item)
-    return render_template('catalog.html', categories=categories, items=items)
+    categories = session.query(Category).all()
+    items = session.query(Item).all()
+    return render_template('catalog.html', categories=categories)#, items=items)
 
 @app.route('/catalog/<int:category_id>/items')
 def viewCategory(category_id):
@@ -223,9 +214,10 @@ def newItem(category_id):
 def updateItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
     updatedItem = session.query(Item).filter_by(id=item_id).one()
+    creator = session.query(User).filter_by(id=updatedItem.user_id).one()
     # check if user is the creator of the item
     if updatedItem.user_id != login_session['user_id']:
-        flash("You must be the creator of an Item to edit it. This item belongs to %s", % updatedItem.name)
+        flash("You must be the creator of an Item to edit it. This item belongs to %s" % creator.name)
         return redirect(url_for('catalog'))
     if request.method == 'GET':
         return render_template('edit-item.html', category=category, updatedItem=updatedItem)
@@ -256,7 +248,7 @@ def deleteItem(category_id, item_id):
     owner = session.query(User).filter_by(id = deleteItem.user_id)
 
     if login_session['user'] != owner.id:
-        flash('You must be the owner to delete this item. This item belongs to %s.', % owner.name)
+        flash('You must be the owner to delete this item. This item belongs to %s.' % owner.name)
         return redirect(url_for('catalog'))
     
     if request.method == 'GET':
@@ -269,12 +261,12 @@ def deleteItem(category_id, item_id):
 
 # JSON ENDPOINTs
 
-@app.route('catalog/JSON')
+@app.route('/catalog/JSON')
 def catalogJSON():
     json_catalog = session.query(Category).all()
     return jsonify(json_catalog = [c.serialize for c in json_catalog])
 
-@app.route('catalog/<int:category_id>/items/JSON')
+@app.route('/catalog/<int:category_id>/items/JSON')
 def itemsJSON():
     json_items = session.query(Item).filter_by(category_id = category_id).all()
     return jsonify(json_items = [i.serialize for i in json_items])

@@ -1,16 +1,16 @@
 from sqlalchemy import Column, ForeignKey, Integer, Text, DateTime, LargeBinary, String
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, backref
 
-Base = declarative_base
+Base = declarative_base()
 
 class User(Base):
-    __tablename__: "user"
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=false)
-    email = Column(String(50), nullable=false)
-    picture = Column(String(50), nullable=false)
+    name = Column(String(50), nullable=False)
+    email = Column(String(50), nullable=False)
+    picture = Column(String(50), nullable=False)
     
     @property
     def serialize(self):
@@ -22,7 +22,7 @@ class User(Base):
     }
 
 class Category(Base):
-    __tablename__: "categories"
+    __tablename__ = "categories"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
 
@@ -34,23 +34,24 @@ class Category(Base):
         }
 
 class Item(Base):
-    __tablename__: "items"
+    __tablename__ = "items"
     id = Column(Integer, primary_key=True)
     name = Column(Integer, nullable=False)
-    category_id = Column(Integer, ForeignKey(categories.id), nullable=false)
-    item_category = relationship("Category", back_populates="Item")
-    user_id = Column(Integer, ForeignKey(user.id), nullable=false)
-    item_creator = relationship("User", back_populates="Item")
-    description = Column(String, nullable=true)
+    category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+    item_category = relationship("Category", backref="Item")
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    item_creator = relationship("User", backref="Item")
+    description = Column(String, nullable=True)
 
     @property
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description
+            'description': self.description,
             'category': self.item_category.name
         }
 
-engine = create_engine('postgresql://item_catalog.db')
-base.metadata.create_all(engine)
+
+engine = create_engine('sqlite:///catalog.db')
+Base.metadata.create_all(engine)
