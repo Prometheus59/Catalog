@@ -10,7 +10,7 @@
 <body>
     <nav>
         <ul>
-            <li><a href="/catalog">Catalog App</a></li>
+            <li><a href="/catalog"><h2>Catalog App</h2></a></li>
             <li style="float:right">
                 <a href="/login">Login</a>
             </li>
@@ -19,25 +19,29 @@
     
     <div class="container category">
         <div class="category_list">
-            <h2>Categories</h2>
+            <h1>Categories</h1>
             <ul>
                 {% for i in categories %}
-                <li><a href="#">{{i.name}}</a></li>
+                <li><a href="#"><h3>{{i.name}}</h3></a></li>
                 <br>
                 {% endfor %}
             </ul>
-            <br>
         </div>
+
+        <div class="line"></div>
+
         <div class="item_list">
-            <h2>Latest items</h2>
+            <h1>Latest Items</h1>
             <ul>
-                {% for i in items %}
-                <li><a href="#">
-                    <h2>{{i.name}}</h2>
-                    <h4>{{i.item_category.name}}</h4></a>
-                </li>
-                <br><br><br><br>
-                {% endfor %}
+                <div>
+                    {% for i in items %}
+                    <li><a href="#">
+                        <h3 class="iitem firstt">{{i.name}}</h3>
+                        <h4 class="iitem subt">({{i.item_category.name}})</h4></a>
+                    </li>
+                    <br>
+                    {% endfor %}
+                </div>
             </ul>
             
         </div>

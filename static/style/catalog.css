@@ -6,13 +6,20 @@ nav ul {
     background-color: rgb(4, 4, 46);
 }
 
-nav ul a {
-    color: white;
+a:link{
+    text-decoration: none;
 }
 
-li {
+nav ul a {
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+nav li {
     list-style-type: none;
     float: left;
+    margin: 0px;
 }
 
 nav li a {
@@ -26,6 +33,50 @@ nav li a:hover {
     background-color: #111;
 }
 
+li {
+    list-style-type: none;
+}
+
 .container {
-    
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+li h3 {
+    margin: 0px;
+}
+
+.category_list{
+    order: 1;
+    padding-right: 50px;
+}
+
+.category_list li a {
+    color: orange;
+}
+
+.item_list{
+    order: 3;
+    flex-shrink: 4;
+    flex-direction: row;
+}
+
+.iitem{
+    display: inline-block;    
+}
+
+.subt{
+    color: grey;
+    margin: 0;
+}
+
+.firstt{
+    color: orange;
+}
+
+.line{
+    border-left: 6px solid orange;
+    order: 2;
+    padding-left: 150px;
 }
