@@ -20,6 +20,7 @@ class User(Base):
             'email': self.email,
             'picture': self.picture
     }
+    #Comment added
 
 class Category(Base):
     __tablename__ = "categories"
