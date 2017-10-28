@@ -169,7 +169,7 @@ def gdisconnect():
 def viewCatalog():
     categories = session.query(Category).all()
     items = session.query(Item).all()
-    return render_template('catalog.html', categories=categories)#, items=items)
+    return render_template('catalog.html', categories=categories, items=items)#, items=items)
 
 @app.route('/catalog/<int:category_id>/items')
 def viewCategory(category_id):

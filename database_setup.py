@@ -20,7 +20,6 @@ class User(Base):
             'email': self.email,
             'picture': self.picture
     }
-    #Comment added
 
 class Category(Base):
     __tablename__ = "categories"
@@ -39,9 +38,9 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Integer, nullable=False)
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
-    item_category = relationship("Category", backref="Item")
+    item_category = relationship("Category", backref="items")
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    item_creator = relationship("User", backref="Item")
+    item_creator = relationship("User", backref="items")
     description = Column(String, nullable=True)
 
     @property

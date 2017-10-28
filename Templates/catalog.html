@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style/catalog.css') }}">
+    
 </head>
 
 <body>
@@ -28,10 +29,10 @@
         <div class="item_list">
             <h2>Latest items</h2>
             <ul>
-                {% for j in items %}
+                {% for i in items %}
                 <li><a href="#">
-                    <h2>{{j.name}}</h2>
-                    <h4>{{j.item_category}}</h4></a>
+                    <h2>{{i.name}}</h2>
+                    <h4>{{i.item_category.name}}</h4></a>
                 </li>
                 {% endfor %}
             </ul>
