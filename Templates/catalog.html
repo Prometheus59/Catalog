@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/style/catalog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/catalog.css') }}">
 </head>
 
 <body>
@@ -15,16 +15,30 @@
             </li>
         </ul>
     </nav>
-
-    <div class="container">
+    
+    <div class="container category">
         <div class="category_list">
+            <h2>Categories</h2>
             <ul>
-            {% for i in categories %}
-            <li><a href="#">{{i.name}}</a></li>
-            {% endfor %}
+                {% for i in categories %}
+                <li><a href="#">{{i.name}}</a></li>
+                {% endfor %}
             </ul>
         </div>
+        <div class="item_list">
+            <h2>Latest items</h2>
+            <ul>
+                {% for j in items %}
+                <li><a href="#">
+                    <h2>{{j.name}}</h2>
+                    <h4>{{j.item_category}}</h4></a>
+                </li>
+                {% endfor %}
+            </ul>
+            
+        </div>
     </div>
+    
 </body>
 
 </html>

@@ -36,13 +36,12 @@ session.commit()
 
 # Fake Items
 
-Item1 = Item(id = 1, name="t-shirt", category_id = 1, item_category = "tops", user_id=1, item_creator="Frank", description="Plain white t-shirt")
+Item1 = Item(id = 1, name="t-shirt", category_id = 1, user_id=1, description="Plain white t-shirt")
 session.add(Item1)
 session.commit()
 
-Item1 = Item(id=2, name="jeans", category_id=2, item_category="bottoms",
-             user_id=2, item_creator="James", description="Long black jeans")
-session.add(Item1)
+Item2 = Item(id=2, name="jeans", category_id=2, user_id=2, description="Long black jeans")
+session.add(Item2)
 session.commit()
 
 print "Database successfully populated"
