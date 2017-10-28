@@ -26,21 +26,21 @@ session.commit()
 
 # Fake Categories
 
-Category1 = Category(id=1, name="tops")
+Category1 = Category(id=1, name="Tops")
 session.add(Category1)
 session.commit()
 
-Category2 = Category(id=2, name="bottoms")
+Category2 = Category(id=2, name="Bottoms")
 session.add(Category2)
 session.commit()
 
 # Fake Items
 
-Item1 = Item(id = 1, name="t-shirt", category_id = 1, user_id=1, description="Plain white t-shirt")
+Item1 = Item(id = 1, name="T-shirt", category_id = 1, user_id=1, description="Plain white T-shirt")
 session.add(Item1)
 session.commit()
 
-Item2 = Item(id=2, name="jeans", category_id=2, user_id=2, description="Long black jeans")
+Item2 = Item(id=2, name="Jeans", category_id=2, user_id=2, description="Long black Jeans")
 session.add(Item2)
 session.commit()
 
