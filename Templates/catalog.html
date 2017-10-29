@@ -22,20 +22,22 @@
             <h1>Categories</h1>
             <ul>
                 {% for i in categories %}
-                <li><a href="#"><h3>{{i.name}}</h3></a></li>
+                <li><a href="url_for('viewCategory', category_id=i.id)">
+                    <h3>{{i.name}}</h3>
+                </a></li>
                 <br>
                 {% endfor %}
             </ul>
         </div>
-
+        
         <div class="line"></div>
-
+        
         <div class="item_list">
             <h1>Latest Items</h1>
             <ul>
                 <div>
                     {% for i in items %}
-                    <li><a href="#">
+                    <li><a href="{{url_for('viewItem', category_id=i.category_id, item_id=i.id)}}">
                         <h3 class="iitem firstt">{{i.name}}</h3>
                         <h4 class="iitem subt">({{i.item_category.name}})</h4></a>
                     </li>
