@@ -11,7 +11,7 @@
     <nav>
         <ul>
             <li><a href="/catalog"><h2>Catalog App</h2></a></li>
-            <li style="float:right">
+            <li class="loginbutton">
                 <a href="/login">Login</a>
             </li>
         </ul>
@@ -22,7 +22,7 @@
             <h1>Categories</h1>
             <ul>
                 {% for i in categories %}
-                <li><a href="url_for('viewCategory', category_id=i.id)">
+                <li><a href="{{url_for('viewCategory', category_id=i.id)}}">
                     <h3>{{i.name}}</h3>
                 </a></li>
                 <br>
