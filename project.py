@@ -117,7 +117,7 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    user_id = getUserInfo(login_session['email'])
+    user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
@@ -158,6 +158,8 @@ def getUserID(email):
         return None
 
 # Disconnect from website
+
+
 @app.route('/gdisconnect')
 def gdisconnect():
         # Only disconnect a connected user.
