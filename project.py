@@ -114,6 +114,29 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    user_id = findUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+        login_user(user_id)
+    login_session['user_id'] = user_id
+
+    def findUserID(email):
+        try:
+            user = session.query(User).filter_by(email=email).one()
+            return user.id
+        except:
+            return None
+
+    def createUser(login_session):
+        newUser = User(name=login_session['username'], email=login_session[
+            'email'], picture=login_session['picture'])
+        session.add(newUser)
+        session.commit()
+        user = session.query(User).filter_by(email=login_session['email']).one()
+        return user.id
+
+
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -123,6 +146,7 @@ def gconnect():
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
+    login_user(user)
     return output
 
 # Disconnect from website
@@ -159,9 +183,6 @@ def gdisconnect():
         return response
 
 
-#
-
-
 # Flask Routing
 
 @app.route('/')
@@ -169,20 +190,21 @@ def gdisconnect():
 def viewCatalog():
     categories = session.query(Category).all()
     items = session.query(Item).all()
-    return render_template('catalog.html', categories=categories, items=items)#, items=items)
+    return render_template('catalog.html', categories=categories, items=items)
 
 @app.route('/catalog/<int:category_id>/items')
 def viewCategory(category_id):
     categories = session.query(Category)
     category = session.query(Category).filter_by(id = category_id).one()
     items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('items.html', category=category, categories=categories, items=items)
+    count = session.query(Item).filter_by(category_id=category_id).count()
+    return render_template('items.html', category=category, categories=categories, items=items, count=count)
 
 @app.route('/catalog/<int:category_id>/<int:item_id>')
 def viewItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id)
-    item = session.query(Item).filter_by(id=item_id)
-    creator = session.query(User).filter_by(id=user_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    creator = session.query(User).filter_by(id=item.user_id).one()
     if creator.id != login_session['user_id'] or 'username' not in login_session:    
         return render_template('detailed-public-item.html', category=category, item=item)
     else:
@@ -195,7 +217,7 @@ def viewItem(category_id, item_id):
 def newItem(category_id):
     if request.method == 'GET': # Show the add form
         category = session.query(Category).filter_by(id=category_id).one()
-        return render_template('new-item.html', categories=categories)
+        return render_template('new-item.html', category=category)
     else: # Add the Item
         newItem = Item(
             name = request.form['name'],

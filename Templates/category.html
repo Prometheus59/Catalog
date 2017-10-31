@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="category_list">
+        <h1>Categories</h1>
+        <ul>
+            {% for i in categories %}
+            <li>
+                <a href="{{url_for('viewCategory', category_id=i.id)}}">
+                    <h3>{{i.name}}</h3>
+                </a>
+            </li>
+            <br> {% endfor %}
+        </ul>
+    </div>

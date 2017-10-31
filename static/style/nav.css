@@ -1,0 +1,46 @@
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(4, 4, 46);
+}
+
+.loginbutton{
+    float:right;
+    margin: 20px;
+    border-radius: 12px;
+    background-color: orange;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    transition-duration: 0.4s;
+}
+
+a:link{
+    text-decoration: none;
+}
+
+nav ul a {
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+.loginbutton:hover{
+    background-color: rgb(4, 4, 46);
+}
+
+nav li {
+    list-style-type: none;
+    float: left;
+    margin: 0px;
+}
+
+nav li a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}

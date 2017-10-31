@@ -1,54 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    {% include "head.html" %}
     <title>Home Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/catalog.css') }}">
-    
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="/catalog"><h2>Catalog App</h2></a></li>
-            <li class="loginbutton">
-                <a href="/login">Login</a>
-            </li>
-        </ul>
-    </nav>
     
-    <div class="container category">
-        <div class="category_list">
-            <h1>Categories</h1>
-            <ul>
-                {% for i in categories %}
-                <li><a href="{{url_for('viewCategory', category_id=i.id)}}">
-                    <h3>{{i.name}}</h3>
-                </a></li>
+    {% include "nav.html" %}
+    {% include "category.html" %}
+    
+    <div class="line"></div>
+    
+    <div class="item_list">
+        <h1>Latest Items</h1>
+        <ul>
+            <div>
+                {% for i in items %}
+                <li><a href="{{url_for('viewItem', category_id=i.category_id, item_id=i.id)}}">
+                    <h3 class="iitem prime">{{i.name}}</h3>
+                    <h4 class="iitem subt">({{i.item_category.name}})</h4></a>
+                </li>
                 <br>
                 {% endfor %}
-            </ul>
-        </div>
+            </div>
+        </ul>
         
-        <div class="line"></div>
-        
-        <div class="item_list">
-            <h1>Latest Items</h1>
-            <ul>
-                <div>
-                    {% for i in items %}
-                    <li><a href="{{url_for('viewItem', category_id=i.category_id, item_id=i.id)}}">
-                        <h3 class="iitem firstt">{{i.name}}</h3>
-                        <h4 class="iitem subt">({{i.item_category.name}})</h4></a>
-                    </li>
-                    <br>
-                    {% endfor %}
-                </div>
-            </ul>
-            
-        </div>
     </div>
-    
+</div>
+
 </body>
 
 </html>
