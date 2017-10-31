@@ -6,7 +6,16 @@
             </a>
         </li>
         <li class="loginbutton">
-            <a href="/login">Login</a>
+             {% if 'username' not in session %}
+            <a href="{{url_for('viewLogin')}}" class="navbar-text navbar-margin-btn">
+                <h3>login</h3>
+            </a>
+            {% else %}
+            <a href="{{url_for('gdisconnect')}}" class="navbar-text navbar-margin-btn">
+                <h3>logout</h3>>
+            </a>
+            {% endif %}
+            </div>
         </li>
     </ul>
 </nav>

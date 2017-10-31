@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include "head.html" %}
+    <title>Public Item</title>
+</head>
+
+<body>
+    
+    {% include "nav.html" %}
+    
+    <div class="detailed_item">
+        <h1>{{item.name}}</h1>
+        <h3>{{item.description}}</h3>
+        <div class="alter">
+            <a href="#">
+                <h4>Edit</h4>
+            </a>
+            <a href="#">
+                <h4>Delete</h4>
+            </a>
+        </div>
+    </div>
+    
+    
+    
+</body>
+
+</html>

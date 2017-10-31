@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, redirect, render_template, flash, url_for, session as login_session, make_response
+from flask import Flask, request, jsonify, redirect, render_template, flash, url_for, make_response
+from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -33,7 +34,7 @@ session = DBSession()
 
 # ADD LOGIN/AUTHENTICATION/USERS STUFF HERE
 @app.route('/login')
-def veiwLogin():
+def viewLogin():
     # Create anti-forgery state token
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
@@ -50,7 +51,8 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     # Obtain authorization code
-    code = request.data
+    request.get_data()
+    code = request.data.decode('utf-8')
 
     try:
         # Upgrade the authorization code into a credentials object
@@ -68,7 +70,9 @@ def gconnect():
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+    response = h.request(url, 'GET')[1]
+    str_response = response.decode('utf-8')
+    result = json.loads(str_response)
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
@@ -87,7 +91,6 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -100,12 +103,12 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
-    login_session['access_token'] = credentials.access_token
+    login_session['access_token'] = access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    params = {'access_token': access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
@@ -114,28 +117,10 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    user_id = findUserID(login_session['email'])
+    user_id = getUserInfo(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
-        login_user(user_id)
     login_session['user_id'] = user_id
-
-    def findUserID(email):
-        try:
-            user = session.query(User).filter_by(email=email).one()
-            return user.id
-        except:
-            return None
-
-    def createUser(login_session):
-        newUser = User(name=login_session['username'], email=login_session[
-            'email'], picture=login_session['picture'])
-        session.add(newUser)
-        session.commit()
-        user = session.query(User).filter_by(email=login_session['email']).one()
-        return user.id
-
-
 
     output = ''
     output += '<h1>Welcome, '
@@ -146,39 +131,62 @@ def gconnect():
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
-    login_user(user)
     return output
+
+# User Helper Functions
+
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 # Disconnect from website
 @app.route('/gdisconnect')
 def gdisconnect():
+        # Only disconnect a connected user.
     access_token = login_session.get('access_token')
     if access_token is None:
-        print 'Access Token is None'
-        response = make_response(json.dumps(
-            'Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print 'In gdisconnect access token is %s', access_token
-    print 'User name is: '
-    print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
     if result['status'] == '200':
+        # Reset the user's sesson.
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
+
+        # response = make_response(json.dumps('Successfully disconnected.'), 200)
+        # response.headers['Content-Type'] = 'application/json'
+        response = redirect(url_for('showCatalog'))
+        flash("You are now logged out.")
         return response
     else:
-        response = make_response(json.dumps(
-            'Failed to revoke token for given user.', 400))
+        # For whatever reason, the given token was invalid.
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -204,17 +212,19 @@ def viewCategory(category_id):
 def viewItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id)
     item = session.query(Item).filter_by(id=item_id).one()
-    creator = session.query(User).filter_by(id=item.user_id).one()
-    if creator.id != login_session['user_id'] or 'username' not in login_session:    
+    creator = getUserInfo(item.user_id)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
         return render_template('detailed-public-item.html', category=category, item=item)
     else:
-        return render_template('detailed-user-item.html', category=category, item=item)
+        return render_template('detailed-user-item.html', category=category, item=item, creator=creator)
 
 
 
 @app.route('/catalog/<int:category_id>/new', methods=['GET', 'POST'])
 @login_required
 def newItem(category_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'GET': # Show the add form
         category = session.query(Category).filter_by(id=category_id).one()
         return render_template('new-item.html', category=category)
