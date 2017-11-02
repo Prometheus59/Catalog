@@ -24,11 +24,12 @@ li h3 {
 .item_list{
     order: 3;
     flex-shrink: 4;
-    flex-direction: row;
+    flex-direction: column;
+    display: flex;
 }
 
 .iitem{
-    display: inline-block;    
+    display: inline-block;
 }
 
 .subt{
@@ -51,4 +52,28 @@ li h3 {
     border-left: 6px solid orange;
     order: 2;
     padding-left: 150px;
+}
+
+.alter{
+    display: flex;
+    flex-direction: row;
+}
+
+.a1 {
+    padding-left: 25px;
+    margin: 5px;
+}
+
+.a2 {
+    margin: 5px;
+}
+
+.line2{
+    border-left:2px solid grey;
+    height: 28px;
+}
+
+h4 {
+    margin: 0px;
+    padding: 0px;
 }

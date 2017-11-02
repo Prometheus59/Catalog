@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify, redirect, render_template, flash, url
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
