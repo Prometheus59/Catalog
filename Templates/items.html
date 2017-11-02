@@ -16,9 +16,12 @@
         <h1>{{category.name}} Items ({{count}})</h1>
         <ul>
             {% for i in items %}
-            <li><a href="{{url_for('viewItem', category_id=i.category_id, item_id=i.id)}}"}}><h3 class="prime">{{i.name}}</h3></a></li> 
+            <li><a href="{{url_for('viewItem', category_id=i.category_id, item_id=i.id)}}"><h3 class="prime">{{i.name}}</h3></a></li> 
             {% endfor %}
         </ul>
+        <a href="{{url_for('newItem', category_id=category.id)}}" class="addItem">
+            <h4>Add Item</h4>
+        </a>
     </div>
     
 </div>

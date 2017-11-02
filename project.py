@@ -229,18 +229,17 @@ def newItem(category_id):
         return redirect('/login')
     if request.method == 'GET': # Show the add form
         category = session.query(Category).filter_by(id=category_id).one()
-        return render_template('new-item.html', category=category)
+        return render_template('newItem.html', category=category)
     else: # Add the Item
-        newItem = Item(
-            name = request.form['name'],
-            description = request.form['description'],
-            category = session.query(Category).filter_by(id=category_id).one(),
-            picture = request.form['picture'],
-            user_id = login_session['user_id'])
-        session.add(newItem)
+        addItem = Item(
+            name = request.form.get('name'),
+            description = request.form.get('description'),
+            category_id = category_id,
+            user_id = login_session.get('user_id'))
+        session.add(addItem)
         session.commit()
         flash('Item has been added successfully')
-        return redirect(url_for('items',category_id=category_id))
+        return redirect(url_for('viewCategory',category_id=category_id))
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
@@ -252,9 +251,9 @@ def updateItem(category_id, item_id):
     # check if user is the creator of the item
     if updatedItem.user_id != login_session['user_id']:
         flash("You must be the creator of an Item to edit it. This item belongs to %s" % creator.name)
-        return redirect(url_for('catalog'))
+        return redirect(url_for('viewCatalog'))
     if request.method == 'GET':
-        return render_template('edit-item.html', category=category, updatedItem=updatedItem)
+        return render_template('edit.html', category=category, updatedItem=updatedItem)
     else:
 
         newName = request.form['name']
@@ -286,7 +285,7 @@ def deleteItem(category_id, item_id):
         return redirect(url_for('catalog'))
 
     if request.method == 'GET':
-        return render_template('deleteitem.html', item=deleteItem, category=category)
+        return render_template('delete.html', item=deleteItem, category=category)
     else:
         session.delete(deleteItem)
         session.commit()
