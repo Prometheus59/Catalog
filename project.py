@@ -165,6 +165,7 @@ def gdisconnect():
         # Only disconnect a connected user.
     access_token = login_session.get('access_token')
     if access_token is None:
+        print 'Access Token is None'
         response = make_response(
             json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -172,7 +173,8 @@ def gdisconnect():
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    if result['status'] == '200':
+    print result.status
+    if result.status == 200:
         # Reset the user's sesson.
         del login_session['access_token']
         del login_session['gplus_id']
@@ -182,7 +184,7 @@ def gdisconnect():
 
         # response = make_response(json.dumps('Successfully disconnected.'), 200)
         # response.headers['Content-Type'] = 'application/json'
-        response = redirect(url_for('showCatalog'))
+        response = redirect(url_for('viewCatalog'))
         flash("You are now logged out.")
         return response
     else:
@@ -256,12 +258,12 @@ def updateItem(category_id, item_id):
     if request.method == 'GET':
         return render_template('edit-item.html', category=category, updatedItem=updatedItem)
     else:
-        #TODO: Make sure these variables work
+
         newName = request.form['name']
         newDesc = request.form['description']
         newPic = request.form['picture']
         newCat = request.form['category']
-        if newName: 
+        if newName:
             updatedItem.name = newName
         if newDesc:
             updatedItem.description = newDesc
@@ -284,7 +286,7 @@ def deleteItem(category_id, item_id):
     if login_session['user'] != owner.id:
         flash('You must be the owner to delete this item. This item belongs to %s.' % owner.name)
         return redirect(url_for('catalog'))
-    
+
     if request.method == 'GET':
         return render_template('deleteitem.html', item=deleteItem, category=category)
     else:
