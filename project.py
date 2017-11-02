@@ -247,27 +247,27 @@ def newItem(category_id):
 def updateItem(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
     updatedItem = session.query(Item).filter_by(id=item_id).one()
-    creator = session.query(User).filter_by(id=updatedItem.user_id).one()
+    categories = session.query(Category).all()
+    user = getUserInfo(login_session['user_id'])
+    creator = getUserInfo(updatedItem.user_id)
     # check if user is the creator of the item
-    if updatedItem.user_id != login_session['user_id']:
+    if creator.id != login_session['user_id']:
         flash("You must be the creator of an Item to edit it. This item belongs to %s" % creator.name)
         return redirect(url_for('viewCatalog'))
     if request.method == 'GET':
-        return render_template('edit.html', category=category, updatedItem=updatedItem)
+        return render_template('edit.html', category=category, item=updatedItem, categories=categories)
     else:
 
-        newName = request.form['name']
-        newDesc = request.form['description']
-        newPic = request.form['picture']
-        newCat = request.form['category']
+        category = session.query(Category).filter_by(name=request.form.get('category')).one()
+        newName = request.form.get('name')
+        newDesc = request.form.get('description')
+        # newCat = request.form.get('category')
         if newName:
             updatedItem.name = newName
         if newDesc:
             updatedItem.description = newDesc
-        if newPic:
-            updatedItem.picture = newPic
-        if newCat:
-            updatedItem.item_catalog = newCat
+        if category:
+            updatedItem.category_id = category.id
         session.add(updatedItem)
         session.commit()
         flash('Item has been updated successfully')

@@ -7,9 +7,22 @@
 <body>
     {% include "nav.html" %}
     
-    <form>
+    <form action="{{ url_for('updateItem', category_id=category.id, item_id=item.id )}}" method='POST'>
         <h1>Edit Item </h1><br>
         <h3>Item Name: </h3>
+        <input type="text" name="name">
+        <br>
+        <h3>Item Description: </h3>
+        <input type="text" size="50" name="description">
+        <br>
+        <h3>Item Category: </h3>
+        <select name="category">
+            {% for c in categories %}
+            <option value="{{c.name}}" {% if c==item.category %} selected {% endif %}>{{c.name}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit">
+        <input type="reset">
         
     </form>
     
