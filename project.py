@@ -278,9 +278,9 @@ def updateItem(category_id, item_id):
 def deleteItem(category_id, item_id):
     deleteItem = session.query(Item).filter_by(id = item_id).one()
     category = session.query(Category).filter_by(id = category_id).one()
-    owner = session.query(User).filter_by(id = deleteItem.user_id)
+    owner = getUserInfo(login_session['user_id'])
 
-    if login_session['user'] != owner.id:
+    if login_session['user_id'] != owner.id:
         flash('You must be the owner to delete this item. This item belongs to %s.' % owner.name)
         return redirect(url_for('catalog'))
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "head.html" %}
+    <title>Delete Item</title>
+</head>
+<body>
+    {% include "nav.html" %}
+    
+    <form action="{{ url_for('deleteItem', category_id=category.id, item_id=item.id )}}" method='POST'>
+        <h1>Delete Item </h1>
+        <br>
+        <h3>Are you sure you want to delete {{item.name}}? </h3>
+        <input type="submit" name="submit">
+        <a href="{{url_for('viewCategory', category_id = category.id)}}">
+            <button type="button">Cancel</button>
+        </a>
+    </form>
+    
+</body>
+</html>
