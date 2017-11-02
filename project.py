@@ -212,13 +212,13 @@ def viewCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/<int:item_id>')
 def viewItem(category_id, item_id):
-    category = session.query(Category).filter_by(id=category_id)
+    category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     creator = getUserInfo(item.user_id)
     if 'username' not in login_session or creator.id != login_session['user_id']:
         return render_template('detailed-public-item.html', category=category, item=item)
     else:
-        return render_template('detailed-user-item.html', category=category, item=item, creator=creator)
+        return render_template('detailed-user-item.html', category=category, item=item)
 
 
 

@@ -14,11 +14,11 @@
         <h1>{{item.name}}</h1>
         <h3>{{item.description}}</h3>
         <div class="alter">
-            <a class="a1" href="#"> <!-- TODO: Add these links -->
+            <a class="a1" href="{{url_for('updateItem', category_id=category.id, item_id=item.id)}}">
                 <h4>Edit</h4>
             </a>
             <div class="line2"></div>
-            <a class="a2" href="#">
+            <a class="a2" href="{{url_for('deleteItem', category_id=category.id, item_id=item.id)}}">
                 <h4>Delete</h4>
             </a>
         </div>
