@@ -261,7 +261,6 @@ def updateItem(category_id, item_id):
         category = session.query(Category).filter_by(name=request.form.get('category')).one()
         newName = request.form.get('name')
         newDesc = request.form.get('description')
-        # newCat = request.form.get('category')
         if newName:
             updatedItem.name = newName
         if newDesc:
@@ -292,18 +291,24 @@ def deleteItem(category_id, item_id):
         flash('Item has been deleted successfully')
         return redirect(url_for('viewCategory', category_id=category_id))
 
+
 # JSON ENDPOINTs
 
 @app.route('/catalog/JSON')
-def catalogJSON():
-    json_catalog = session.query(Category).all()
-    return jsonify(json_catalog = [c.serialize for c in json_catalog])
+def allItemsJSON():
+    categories = session.query(Category).all()
+    category_dict = [c.serialize for c in categories]
+    for c in range(len(category_dict)):
+        items = [i.serialize for i in session.query(Item)
+                 .filter_by(category_id=category_dict[c]["id"]).all()]
+        if items:
+            category_dict[c]["Item"] = items
+    return jsonify(Category=category_dict)
 
 @app.route('/catalog/<int:category_id>/items/JSON')
-def itemsJSON():
+def itemsJSON(category_id):
     json_items = session.query(Item).filter_by(category_id = category_id).all()
     return jsonify(json_items = [i.serialize for i in json_items])
-
 
 
 if __name__ == '__main__':
