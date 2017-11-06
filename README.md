@@ -1,6 +1,6 @@
 # Catalog Web Application for Udacity Full-Stack Nanodegree Program
 
-##About
+## About
 This is an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items.
 
 ## Included
