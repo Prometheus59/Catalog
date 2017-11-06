@@ -294,17 +294,19 @@ def deleteItem(category_id, item_id):
 
 # JSON ENDPOINTs
 
+# For all JSON Items
 @app.route('/catalog/JSON')
 def allItemsJSON():
     categories = session.query(Category).all()
-    category_dict = [c.serialize for c in categories]
-    for c in range(len(category_dict)):
+    category_dictionary = [c.serialize for c in categories]
+    for c in range(len(category_dictionary)):
         items = [i.serialize for i in session.query(Item)
-                 .filter_by(category_id=category_dict[c]["id"]).all()]
+                 .filter_by(category_id=category_dictionary[c]["id"]).all()]
         if items:
             category_dict[c]["Item"] = items
     return jsonify(Category=category_dict)
 
+# For JSON items in specified category
 @app.route('/catalog/<int:category_id>/items/JSON')
 def itemsJSON(category_id):
     json_items = session.query(Item).filter_by(category_id = category_id).all()
